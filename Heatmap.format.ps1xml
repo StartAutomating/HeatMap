@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-16"?>
+<Configuration>
+  <ViewDefinitions>
+    <View>
+      <Name>Heatmap</Name>
+      <ViewSelectedBy>
+        <TypeName>Heatmap</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <Frame>
+                <CustomItem>
+                  <ExpressionBinding>
+                    <ScriptBlock>
+    $levels = Get-HeatmapLevel
+    $byValue = $levels.GetEnumerator() | Sort-Object Value 
+    
+    $name = $_.InstanceName 
+    $width = $host.UI.RawUI.BufferSize.Width
+    $nameSide = $width * .4
+    $remainingWidth = $width * .4
+    $perc = $_.cookedvalue / 100
+    $pathName = Split-Path $_.Path  -Leaf
+    $cookedValue = $_.CookedValue
+    $line = "$($_.Path)".PadRight($nameSide) + "|$([Math]::Round($perc * 100))% "  + ('*' * ($remainingWidth * $perc))
+    foreach ($bv in $byValue) {
+        if ($cookedValue -gt $bv.Value) {            
+            $valueSet = $bv.Key
+            continue
+        } else {
+            break
+        }                    
+    }
+    Write-Host -Object $line -ForegroundColor $valueSet
+    $null
+</ScriptBlock>
+                  </ExpressionBinding>
+                </CustomItem>
+              </Frame>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+  </ViewDefinitions>
+</Configuration>
